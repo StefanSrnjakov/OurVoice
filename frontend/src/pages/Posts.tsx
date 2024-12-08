@@ -102,9 +102,9 @@ const Posts: React.FC = () => {
 
   return (
     <Box p={6} maxW="container.lg" mx="auto">
-        <Heading as="h2" size="xl" mb={6} textAlign="center">
-          Forum - Objave
-        </Heading>
+      <Heading as="h2" size="xl" mb={6} textAlign="center">
+        Forum - Objave
+      </Heading>
       {user && (
         <Button onClick={onOpen} colorScheme="blue" mb={6}>
           Dodaj novo objavo
