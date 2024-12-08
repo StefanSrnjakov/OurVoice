@@ -9,7 +9,7 @@ var mongoose = require('mongoose');
 var cors = require('cors');
 
 var mongoDB =
-  'mongodb://localhost:27017/YourVoice?retryWrites=true&w=majority&appName=YourVoice';
+  'mongodb+srv://lost-and-found:lostAndFound@cluster0.px7evg2.mongodb.net/YourVoice';
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // LOKALNA POVEZAVA - MORA DELAT (ZAKOMENTIRAJ ZGORNJO KODO IN UPORABI ZAKOMENTIRANO)
