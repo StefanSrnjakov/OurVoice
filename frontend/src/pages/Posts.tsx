@@ -134,6 +134,15 @@ const Posts: React.FC = () => {
               <Text mt={2} fontSize="sm" color="gray.500">
                 Avtor: {post?.userId?.username || 'Neznan uporabnik'}
               </Text>
+              {post.image && (
+                <Box mt={4}>
+                  <img
+                    src={post.image} // Prikazivanje slike (Base64 string ili URL)
+                    alt={post.title}
+                    style={{ width: '100%', height: 'auto', borderRadius: '8px' }}
+                  />
+                </Box>
+              )}
               <Box mt={4} display="flex" alignItems="center">
                 <IconButton
                   icon={<FaThumbsUp />}
