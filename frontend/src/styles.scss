@@ -1,0 +1,24 @@
+.footer-text {
+  font-family: Arial, sans-serif; /* Uporaba privzetega fonta brez dodatnih knjižnic */
+  color: #555; /* Siva barva besedila */
+  font-size: 14px; /* Manjša velikost besedila */
+}
+
+.footer-text:first-child {
+  font-weight: bold; /* Poudarjeno besedilo za prvi span */
+  color: #000; /* Temnejša barva za poudarjeno besedilo */
+}
+
+.footer-text:last-child {
+  font-weight: normal; /* Normalna teža za drugi span */
+  color: #777; /* Svetlejša barva za drugi span */
+}
+
+.nav a {
+  color: #007bff; /* Barva povezav */
+  text-decoration: none; /* Brez podčrtavanja povezav */
+}
+
+.nav a:hover {
+  text-decoration: underline; /* Podčrtaj povezave ob hoverju */
+}
