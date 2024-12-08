@@ -18,7 +18,7 @@ import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 const Posts: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null); // Track selected post for editing
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user } = useContext(UserContext);
 
@@ -163,13 +163,13 @@ const Posts: React.FC = () => {
                   <Button
                     colorScheme="green"
                     mr={3}
-                    onClick={() => handleEditPost(post)}
+                    onClick={() => handleEditPost(post)} // Edit post
                   >
                     Uredi
                   </Button>
                   <Button
                     colorScheme="red"
-                    onClick={() => handleDeletePost(post._id)}
+                    onClick={() => handleDeletePost(post._id)} // Delete post
                   >
                     Izbriši
                   </Button>
@@ -183,10 +183,10 @@ const Posts: React.FC = () => {
         isOpen={isOpen}
         onClose={() => {
           onClose();
-          setSelectedPost(null);
+          setSelectedPost(null); // Reset selected post when modal closes
         }}
         onPostAdded={handlePostAdded}
-        post={selectedPost}
+        post={selectedPost} // Pass selected post to the modal
       />
     </Box>
   );
