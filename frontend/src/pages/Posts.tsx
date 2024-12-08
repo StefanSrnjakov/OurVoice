@@ -57,12 +57,23 @@ const Posts: React.FC = () => {
         throw new Error('Failed to update like/dislike');
       }
   
-      const updatedPost = await response.json();
+      const updatedPostResponse = await response.json();
   
+      const updatedPost: Post = updatedPostResponse.post;
       // Update the specific post in the state
       setPosts((prevPosts) =>
-        prevPosts.map((post) => (post._id === updatedPost.post._id ? updatedPost.post : post))
+        prevPosts.map((post) => {
+          if (post._id === updatedPost._id) {
+            return {
+              ...post,
+              likes: updatedPost.likes,
+              dislikes: updatedPost.dislikes,
+            };
+          }
+          return post;
+        })
       );
+      
     } catch (error) {
       console.error('Napaka pri posodobitvi lajkov/dislajkov:', error);
     }
