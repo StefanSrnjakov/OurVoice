@@ -7,7 +7,8 @@ var CommentSchema = new Schema({
         type: Schema.Types.ObjectId, 
         ref: 'users', 
         required: true },
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
+    likes: { type: Array, default: [] },
 });
 
 module.exports = mongoose.model('comments', CommentSchema);

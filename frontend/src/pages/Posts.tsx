@@ -134,6 +134,25 @@ const Posts: React.FC = () => {
               <Text mt={2} fontSize="sm" color="gray.500">
                 Avtor: {post?.userId?.username || 'Neznan uporabnik'}
               </Text>
+              <Box mt={4} display="flex" alignItems="center">
+                <IconButton
+                  icon={<FaThumbsUp />}
+                  aria-label="Like"
+                  onClick={() => handleLikeDislike(post._id, 'like')}
+                  colorScheme={user && post.likes.includes(user?._id) ? 'blue' : 'gray'}
+                  mr={2}
+                />
+                <Text>{post.likes.length}</Text>
+                <IconButton
+                  icon={<FaThumbsDown />}
+                  aria-label="Dislike"
+                  onClick={() => handleLikeDislike(post._id, 'dislike')}
+                  colorScheme={user && post.dislikes.includes(user?._id) ? 'red' : 'gray'}
+                  ml={4}
+                  mr={2}
+                />
+                <Text>{post.dislikes.length}</Text>
+              </Box>
               <Link to={`/posts/${post._id}`}>
                 <Button colorScheme="teal" mt={4}>
                   Preberi več
