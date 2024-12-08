@@ -94,7 +94,7 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
       title,
       content,
       category,
-      image, // Include Base64 image string
+      image, 
       userId: user._id,
     };  
     console.log('Payload:', payload);
@@ -111,8 +111,6 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
       }),
     })
       .then((response) => {
-        console.log('Status:', response.status); // Log status
-        console.log('Response:', response);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

@@ -52,7 +52,6 @@ module.exports = {
   },
 
   create: function (req, res) {
-    console.log("heloo")
     var newPost = new PostModel({
       title: req.body.title,
       content: req.body.content,
