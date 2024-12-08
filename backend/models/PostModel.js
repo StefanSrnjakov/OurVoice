@@ -20,6 +20,8 @@ var PostSchema = new Schema({
   ],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+  likes: [{ type: Schema.Types.ObjectId, ref: 'users' }],
+  dislikes: [{ type: Schema.Types.ObjectId, ref: 'users' }],
 });
 
 module.exports = mongoose.model('posts', PostSchema);
