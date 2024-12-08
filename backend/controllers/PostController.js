@@ -118,7 +118,76 @@ module.exports = {
       return res.status(204).json();
     });
   },
-
+  toggleLike: async function (req, res) {
+    const { id } = req.params;
+    const { userId } = req.body;
+    const postId = id;
+    try {
+      const post = await PostModel.findById(postId);
+  
+      if (!post) {
+        return res.status(404).json({ message: 'Post not found' });
+      }
+  
+      const hasLiked = post.likes.includes(userId);
+      const hasDisliked = post.dislikes.includes(userId);
+  
+      if (hasLiked) {
+        post.likes.pull(userId);
+      } else {
+        if (hasDisliked) {
+          post.dislikes.pull(userId);
+        }
+        post.likes.push(userId);
+      }
+  
+      await post.save();
+  
+      return res.status(200).json({ message: 'Post updated', post });
+    } catch (err) {
+      console.log('Error:', err.message || err);
+      return res.status(500).json({
+        message: 'Error when updating likes/dislikes',
+        error: err.message || err,
+      });
+    }
+  },
+  
+  toggleDislike: async function (req, res) {
+    const { id } = req.params;
+    const { userId } = req.body;
+    const postId = id;
+  
+    try {
+      const post = await PostModel.findById(postId);
+  
+      if (!post) {
+        return res.status(404).json({ message: 'Post not found' });
+      }
+  
+      const hasLiked = post.likes.includes(userId);
+      const hasDisliked = post.dislikes.includes(userId);
+  
+      if (hasDisliked) {
+        post.dislikes.pull(userId);
+      } else {
+        if (hasLiked) {
+          post.likes.pull(userId);
+        }
+        post.dislikes.push(userId);
+      }
+  
+      await post.save();
+  
+      return res.status(200).json({ message: 'Post updated', post });
+    } catch (err) {
+      console.log('Error:', err.message || err);
+      return res.status(500).json({
+        message: 'Error when updating likes/dislikes',
+        error: err.message || err,
+      });
+    }
+  },
   addComment: async function (req, res) {
     const postId = req.params.id;
 

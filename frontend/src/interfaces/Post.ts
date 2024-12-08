@@ -3,6 +3,8 @@ export interface Post {
   title: string;
   content: string;
   category: string;
+  likes:string[];
+  dislikes:string[];
   //userId: string;
   userId: {
     _id: string;

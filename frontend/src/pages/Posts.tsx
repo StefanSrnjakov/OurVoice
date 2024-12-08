@@ -7,11 +7,13 @@ import {
   Text,
   Spinner,
   useDisclosure,
+  IconButton,
 } from '@chakra-ui/react';
 import { UserContext } from '../userContext';
 import AddPostModal from '../components/AddPostModal';
 import { Post } from '../interfaces/Post';
 import { Link } from 'react-router-dom';
+import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 
 const Posts: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -38,6 +40,35 @@ const Posts: React.FC = () => {
         setLoading(false);
       });
   };
+
+  const handleLikeDislike = async (postId: string, action: 'like' | 'dislike') => {
+    const actionParam = action === 'like' ? 'toggle-like' : 'toggle-dislike';
+  
+    try {
+      const response = await fetch(`http://localhost:3000/post/${postId}/${actionParam}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: user?._id }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to update like/dislike');
+      }
+  
+      const updatedPost = await response.json();
+  
+      // Update the specific post in the state
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => (post._id === updatedPost.post._id ? updatedPost.post : post))
+      );
+    } catch (error) {
+      console.error('Napaka pri posodobitvi lajkov/dislajkov:', error);
+    }
+  };
+  
+  
 
   useEffect(() => {
     loadPosts();
@@ -103,6 +134,25 @@ const Posts: React.FC = () => {
               <Text mt={2} fontSize="sm" color="gray.500">
                 Avtor: {post?.userId?.username || 'Neznan uporabnik'}
               </Text>
+              <Box mt={4} display="flex" alignItems="center">
+                <IconButton
+                  icon={<FaThumbsUp />}
+                  aria-label="Like"
+                  onClick={() => handleLikeDislike(post._id, 'like')}
+                  colorScheme={user && post.likes.includes(user?._id) ? 'blue' : 'gray'}
+                  mr={2}
+                />
+                <Text>{post.likes.length}</Text>
+                <IconButton
+                  icon={<FaThumbsDown />}
+                  aria-label="Dislike"
+                  onClick={() => handleLikeDislike(post._id, 'dislike')}
+                  colorScheme={user && post.dislikes.includes(user?._id) ? 'red' : 'gray'}
+                  ml={4}
+                  mr={2}
+                />
+                <Text>{post.dislikes.length}</Text>
+              </Box>
               <Link to={`/posts/${post._id}`}>
                 <Button colorScheme="teal" mt={4}>
                   Preberi več
