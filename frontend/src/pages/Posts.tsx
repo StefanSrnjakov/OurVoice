@@ -8,6 +8,7 @@ import {
   Spinner,
   useDisclosure,
   IconButton,
+  Image,
 } from '@chakra-ui/react';
 import { UserContext } from '../userContext';
 import AddPostModal from '../components/AddPostModal';
@@ -43,22 +44,22 @@ const Posts: React.FC = () => {
 
   const handleLikeDislike = async (postId: string, action: 'like' | 'dislike') => {
     const actionParam = action === 'like' ? 'toggle-like' : 'toggle-dislike';
-  
+
     try {
       const response = await fetch(`http://localhost:3000/post/${postId}/${actionParam}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId: user?._id }),
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: user?._id }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to update like/dislike');
       }
-  
+
       const updatedPostResponse = await response.json();
-  
+
       const updatedPost: Post = updatedPostResponse.post;
       // Update the specific post in the state
       setPosts((prevPosts) =>
@@ -147,10 +148,15 @@ const Posts: React.FC = () => {
               </Text>
               {post.image && (
                 <Box mt={4}>
-                  <img
+                  <Image
                     src={post.image} // Prikazivanje slike (Base64 string ili URL)
                     alt={post.title}
-                    style={{ width: '100%', height: 'auto', borderRadius: '8px' }}
+                    borderRadius="md"
+                    mb={2}
+                    width="100%"
+                    height="auto"
+                    maxHeight="250px"
+                    objectFit="cover"
                   />
                 </Box>
               )}

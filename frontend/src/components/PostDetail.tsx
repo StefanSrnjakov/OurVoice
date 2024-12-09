@@ -18,6 +18,7 @@ import {
   ModalFooter,
   Textarea,
   useDisclosure,
+  Image,
 } from '@chakra-ui/react';
 import { UserContext } from '../userContext';
 
@@ -40,6 +41,7 @@ interface Post {
   createdAt: string;
   userId?: User;
   comments?: Comment[];
+  image?: string;
 }
 
 const PostDetail: React.FC = () => {
@@ -157,6 +159,18 @@ const PostDetail: React.FC = () => {
             {post.title}
           </Heading>
           <Divider mb={4} />
+          {post.image && (
+            <Image
+              src={post.image} // Prikazivanje slike (Base64 string ili URL)
+              alt={post.title}
+              borderRadius="md"
+              mb={2}
+              width="100%"
+              height="auto"
+              maxHeight="250px"
+              objectFit="cover"
+            />
+          )}
           <Flex justify="space-between" color="gray.500" fontSize="sm" mb={6}>
             <Text>
               Kategorija: <strong>{post.category}</strong>
