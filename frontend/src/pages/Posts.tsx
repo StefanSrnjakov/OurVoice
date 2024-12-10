@@ -8,6 +8,7 @@ import {
   Spinner,
   useDisclosure,
   IconButton,
+  Image,
   Flex,
 } from '@chakra-ui/react';
 import { UserContext } from '../userContext';
@@ -171,10 +172,15 @@ const Posts: React.FC = () => {
               </Text>
               {post.image && (
                 <Box mt={4}>
-                  <img
+                  <Image
                     src={post.image} // Prikazivanje slike (Base64 string ili URL)
                     alt={post.title}
-                    style={{ width: '100%', height: 'auto', borderRadius: '8px' }}
+                    borderRadius="md"
+                    mb={2}
+                    width="100%"
+                    height="auto"
+                    maxHeight="250px"
+                    objectFit="cover"
                   />
                 </Box>
               )}
