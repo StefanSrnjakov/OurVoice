@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useContext, useRef } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useRef,
+  useCallback,
+} from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -21,6 +27,7 @@ import {
   Image,
 } from '@chakra-ui/react';
 import { UserContext } from '../userContext';
+import { FaEye } from 'react-icons/fa';
 
 interface User {
   username: string;
@@ -42,12 +49,13 @@ interface Post {
   userId?: User;
   comments?: Comment[];
   image?: string;
+  views?: number;
 }
 
 const PostDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [post, setPost] = useState<Post | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [newComment, setNewComment] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user } = useContext(UserContext);
@@ -56,9 +64,9 @@ const PostDetail: React.FC = () => {
   // Ustvarite ref za textarea
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const fetchPost = () => {
+  const fetchPost = useCallback(() => {
     setLoading(true);
-    fetch(`http://localhost:3000/post/${id}`)
+    fetch(`http://localhost:3000/post/${id}?userId=${user?._id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -73,11 +81,13 @@ const PostDetail: React.FC = () => {
         console.error('Napaka pri pridobivanju objave:', error);
         setLoading(false);
       });
-  };
+  }, [id, user?._id]);
 
   useEffect(() => {
+    if (!id || post) return;
     fetchPost(); // Inicialno naložite podatke o objavi
-  }, [id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCommentSubmit = () => {
     if (newComment.trim() === '') {
@@ -151,7 +161,7 @@ const PostDetail: React.FC = () => {
       <Button onClick={() => navigate('/posts')} colorScheme="teal" mb={6}>
         Nazaj na objave
       </Button>
-      {loading ? (
+      {loading || !post ? (
         <Spinner size="xl" />
       ) : post ? (
         <>
@@ -178,6 +188,10 @@ const PostDetail: React.FC = () => {
             <Text>
               Datum: <b>{new Date(post.createdAt).toLocaleDateString()}</b>
             </Text>
+            <Flex align="center">
+              <FaEye color="gray.500" style={{ marginRight: '4px' }} />{' '}
+              <strong>{post.views}</strong>
+            </Flex>
           </Flex>
           <Text color="gray.500" fontSize="sm" mb={4}>
             Avtor:{' '}

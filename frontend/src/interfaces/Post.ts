@@ -10,5 +10,6 @@ export interface Post {
     _id: string;
     username: string;
   };
-  image: string
+  image: string;
+  views: number;
 }
