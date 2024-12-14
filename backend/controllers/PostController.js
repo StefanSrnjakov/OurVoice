@@ -72,6 +72,52 @@ module.exports = {
     });
   },
 
+  report: function (req, res) {
+    const { id } = req.params;
+    const { userId } = req.body;
+
+    console.log(id);
+    console.log(userId);
+
+    PostModel.findOne({ _id: id }, function (err, post) {
+      if (err) {
+        console.error(err);
+        return res.status(500).send({ error: 'Failed to retrieve post' });
+      }
+  
+      if (!post) {
+        return res.status(404).send({ error: 'Post not found' });
+      }
+
+      if (post.reports && post.reports.includes(userId)) {
+        return res.status(200).send({ message: 'You have already reported this post' });
+      }
+  
+      post.reports = post.reports || [];
+      post.reports.push(userId);
+  
+      if (post.reports.length > 5) {
+        post.remove(function (removeErr) {
+          if (removeErr) {
+            console.error(removeErr);
+            return res.status(500).send({ error: 'Failed to delete post' });
+          }
+  
+          res.status(200).send({ message: 'Post deleted due to excessive reports' });
+        });
+      } else {
+        post.save(function (saveErr) {
+          if (saveErr) {
+            console.error(saveErr);
+            return res.status(500).send({ error: 'Failed to report post' });
+          }
+  
+          res.status(200).send({ message: 'Report submitted successfully' });
+        });
+      }
+    });
+  },
+
   update: function (req, res) {
     var id = req.params.id;
 

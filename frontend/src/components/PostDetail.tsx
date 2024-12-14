@@ -18,8 +18,11 @@ import {
   ModalFooter,
   Textarea,
   useDisclosure,
+  Image,
+  IconButton
 } from '@chakra-ui/react';
 import { UserContext } from '../userContext';
+import { FaEye, FaFlag } from 'react-icons/fa';
 
 interface User {
   username: string;
@@ -136,6 +139,33 @@ const PostDetail: React.FC = () => {
         console.error('Napaka pri brisanju komentarja:', error);
       });
   };
+  const handleReport = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/post/report/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: user?._id }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to report post');
+      }
+  
+      const data = await response.json();
+      if (data.message === 'You have already reported this post') {
+        alert('Već ste prijavili ovu objavu.');
+      } else if (data.message === 'Post deleted due to excessive reports') {
+        alert('Ova objava je obrisana zbog prekomernog broja prijava.');
+      } else {
+        alert('Prijava uspešno poslata. Hvala vam!');
+      }
+    } catch (error) {
+      console.error('Napaka pri prijavi objave:', error);
+      alert('Došlo je do greške prilikom slanja prijave.');
+    }
+  };
 
   return (
     <Box
@@ -173,6 +203,18 @@ const PostDetail: React.FC = () => {
             {post.content}
           </Text>
           <Divider my={6} />
+
+          {/* Report button */}
+          <Flex justify="flex-end">
+            <IconButton
+              icon={<FaFlag />}
+              aria-label="Report"
+              onClick={handleReport}
+              colorScheme="yellow"
+              ml={4}
+            />
+          </Flex>
+
           <Heading as="h3" size="md" mb={4}>
             Komentarji
           </Heading>

@@ -13,7 +13,8 @@ import { UserContext } from '../userContext';
 import AddPostModal from '../components/AddPostModal';
 import { Post } from '../interfaces/Post';
 import { Link } from 'react-router-dom';
-import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
+import { FaThumbsUp, FaThumbsDown, FaEye, FaFlag } from 'react-icons/fa';
+import HotPostsRibbon from '../components/HotPostsRibbon';
 
 const Posts: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -67,8 +68,6 @@ const Posts: React.FC = () => {
       console.error('Napaka pri posodobitvi lajkov/dislajkov:', error);
     }
   };
-  
-  
 
   useEffect(() => {
     loadPosts();
@@ -98,6 +97,34 @@ const Posts: React.FC = () => {
       .catch((error) => {
         console.error('Napaka pri brisanju objave:', error);
       });
+  };
+
+  const handleReport = async (postId: string) => {
+    try {
+      const response = await fetch(`http://localhost:3000/post/report/${postId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: user?._id }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to report post');
+      }
+  
+      const data = await response.json();
+      if (data.message === 'You have already reported this post') {
+        alert('Već ste prijavili ovu objavu.');
+      } else if (data.message === 'Post deleted due to excessive reports') {
+        alert('Ova objava je obrisana zbog prekomernog broja prijava.');
+      } else {
+        alert('Prijava uspešno poslata. Hvala vam!');
+      }
+    } catch (error) {
+      console.error('Napaka pri prijavi objave:', error);
+      alert('Došlo je do greške prilikom slanja prijave.');
+    }
   };
 
   return (
@@ -152,6 +179,13 @@ const Posts: React.FC = () => {
                   mr={2}
                 />
                 <Text>{post.dislikes.length}</Text>
+                <IconButton
+                  icon={<FaFlag />}
+                  aria-label="Report"
+                  onClick={() => handleReport(post._id)}
+                  colorScheme="yellow"
+                  ml={4}
+                />
               </Box>
               <Link to={`/posts/${post._id}`}>
                 <Button colorScheme="teal" mt={4}>
