@@ -8,6 +8,8 @@ import {
   Spinner,
   useDisclosure,
   IconButton,
+  Image,
+  Flex,
 } from '@chakra-ui/react';
 import { UserContext } from '../userContext';
 import AddPostModal from '../components/AddPostModal';
@@ -18,6 +20,7 @@ import HotPostsRibbon from '../components/HotPostsRibbon';
 
 const Posts: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [hotPosts, setHotPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null); // Track selected post for editing
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -25,6 +28,20 @@ const Posts: React.FC = () => {
 
   const loadPosts = () => {
     setLoading(true);
+    fetch('http://localhost:3000/post?hot=true')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setHotPosts(data);
+      })
+      .catch((error) => {
+        console.error('Napaka pri pridobivanju objav:', error);
+      });
+
     fetch('http://localhost:3000/post')
       .then((response) => {
         if (!response.ok) {
@@ -44,26 +61,37 @@ const Posts: React.FC = () => {
 
   const handleLikeDislike = async (postId: string, action: 'like' | 'dislike') => {
     const actionParam = action === 'like' ? 'toggle-like' : 'toggle-dislike';
-  
+
     try {
       const response = await fetch(`http://localhost:3000/post/${postId}/${actionParam}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId: user?._id }),
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: user?._id }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to update like/dislike');
       }
-  
-      const updatedPost = await response.json();
-  
+
+      const updatedPostResponse = await response.json();
+
+      const updatedPost: Post = updatedPostResponse.post;
       // Update the specific post in the state
       setPosts((prevPosts) =>
-        prevPosts.map((post) => (post._id === updatedPost.post._id ? updatedPost.post : post))
+        prevPosts.map((post) => {
+          if (post._id === updatedPost._id) {
+            return {
+              ...post,
+              likes: updatedPost.likes,
+              dislikes: updatedPost.dislikes,
+            };
+          }
+          return post;
+        })
       );
+      
     } catch (error) {
       console.error('Napaka pri posodobitvi lajkov/dislajkov:', error);
     }
@@ -145,6 +173,7 @@ const Posts: React.FC = () => {
         </Text>
       ) : (
         <Stack spacing={6}>
+          <HotPostsRibbon hotPosts={hotPosts} />
           {posts.map((post) => (
             <Box
               key={post._id}
@@ -161,6 +190,26 @@ const Posts: React.FC = () => {
               <Text mt={2} fontSize="sm" color="gray.500">
                 Avtor: {post?.userId?.username || 'Neznan uporabnik'}
               </Text>
+              <Text mt={2} fontSize="sm" color="gray.500">
+                <Flex align="center">
+                  <FaEye color="gray.500" style={{ marginRight: '4px' }} />{' '}
+                  <strong>{post.views}</strong>
+                </Flex>
+              </Text>
+              {post.image && (
+                <Box mt={4}>
+                  <Image
+                    src={post.image} // Prikazivanje slike (Base64 string ili URL)
+                    alt={post.title}
+                    borderRadius="md"
+                    mb={2}
+                    width="100%"
+                    height="auto"
+                    maxHeight="250px"
+                    objectFit="cover"
+                  />
+                </Box>
+              )}
               <Box mt={4} display="flex" alignItems="center">
                 <IconButton
                   icon={<FaThumbsUp />}
