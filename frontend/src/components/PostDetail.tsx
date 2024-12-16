@@ -25,10 +25,11 @@ import {
   Textarea,
   useDisclosure,
   Image,
-  IconButton
+  IconButton,
 } from '@chakra-ui/react';
 import { UserContext } from '../userContext';
 import { FaEye, FaFlag } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 interface User {
   username: string;
@@ -223,7 +224,9 @@ const PostDetail: React.FC = () => {
           </Flex>
           <Text color="gray.500" fontSize="sm" mb={4}>
             Avtor:{' '}
-            <strong>{post.userId?.username || 'Neznan uporabnik'}</strong>
+            <Link to={`/user/${post.userId?._id}`}>
+              <strong>{post.userId?.username || 'Neznan uporabnik'}</strong>
+            </Link>
           </Text>
           <Text fontSize="md" lineHeight="tall" mt={4} color="gray.700">
             {post.content}
