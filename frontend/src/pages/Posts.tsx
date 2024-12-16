@@ -166,7 +166,9 @@ const Posts: React.FC = () => {
         </Button>
       )}
       {loading ? (
-        <Spinner size="xl" />
+        <Box textAlign="center" mt={8}>
+          <Spinner size="xl" />
+        </Box>
       ) : posts.length === 0 ? (
         <Text fontSize="lg" color="gray.500" textAlign="center" mt={8}>
           Trenutno ni nobenih objav.
