@@ -82,7 +82,10 @@ const HotPostsRibbon: React.FC<HotPostsRibbonProps> = ({ hotPosts }) => {
               {post.category}
             </Text>
             <Text fontSize="xs" mt={1} color="gray.500">
-              Avtor: {post?.userId?.username || 'Neznan uporabnik'}
+              Avtor:{' '}
+              <Link to={`/user/${post.userId?._id}`}>
+                {post?.userId?.username || 'Neznan uporabnik'}
+              </Link>
             </Text>
             <Link to={`/posts/${post._id}`}>
               <Text color="blue.500" mt={2} fontSize="sm">

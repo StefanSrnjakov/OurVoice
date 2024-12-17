@@ -11,6 +11,8 @@ const PostViewLogModel = require('../models/PostViewLogModel');
 
 module.exports = {
   list: async function (req, res) {
+    const { userId } = req.query;
+  
     if (req.query.hot === 'true') {
       try {
         const now = new Date();
@@ -69,7 +71,8 @@ module.exports = {
       }
     }
     try {
-      const posts = await PostModel.find()
+      const filter = userId ? { userId } : {};
+      const posts = await PostModel.find(filter)
         .populate('userId', 'username')
         .exec();
   

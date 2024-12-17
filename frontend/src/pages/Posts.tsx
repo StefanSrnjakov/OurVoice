@@ -190,7 +190,10 @@ const Posts: React.FC = () => {
                 Kategorija: {post.category}
               </Text>
               <Text mt={2} fontSize="sm" color="gray.500">
-                Avtor: {post?.userId?.username || 'Neznan uporabnik'}
+                Avtor:{' '}
+                <Link to={`/user/${post.userId?._id}`}>
+                  {post?.userId?.username || 'Neznan uporabnik'}
+                </Link>
               </Text>
               <Text mt={2} fontSize="sm" color="gray.500">
                 <Flex align="center">
