@@ -47,23 +47,21 @@ function App() {
             {/* Javni Routes - stran Objave vključena za vse */}
             <Route path="/posts" element={<Posts />} />
             <Route path="/posts/:id" element={<PostDetail />} />
-            {publicRoutes
-              .filter((route) => route.to !== '/' && route.to !== '/posts') // Home in Objave izvzeti
-              .map((route) => (
+            {publicRoutes.map((route) => (
                 <Route
-                  key={route.to}
-                  path={route.to}
-                  element={user ? <Navigate to="/" replace /> : route.element}
+                    key={route.to}
+                    path={route.to}
+                    element={route.element}
                 />
-              ))}
+            ))}
 
             {/* Zaščiteni Routes - samo za prijavljene */}
             {protectedRoutes.map((route) => (
-              <Route
-                key={route.to}
-                path={route.to}
-                element={<ProtectedRoute user={user} element={route.element} />}
-              />
+                <Route
+                    key={route.to}
+                    path={route.to}
+                    element={<ProtectedRoute user={user} element={route.element} />}
+                />
             ))}
           </Routes>
         </main>

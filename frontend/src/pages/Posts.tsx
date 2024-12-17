@@ -8,6 +8,7 @@ import {
   Spinner,
   useDisclosure,
   IconButton,
+  Select,
   Image,
   Flex,
 } from '@chakra-ui/react';
@@ -15,6 +16,7 @@ import { UserContext } from '../userContext';
 import AddPostModal from '../components/AddPostModal';
 import { Post } from '../interfaces/Post';
 import { Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { FaThumbsUp, FaThumbsDown, FaEye, FaFlag } from 'react-icons/fa';
 import HotPostsRibbon from '../components/HotPostsRibbon';
 
@@ -25,6 +27,34 @@ const Posts: React.FC = () => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null); // Track selected post for editing
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user } = useContext(UserContext);
+  const [searchParams] = useSearchParams();
+  const initialCategory = searchParams.get('category') || ''; // Read 'category' from URL
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
+
+  const categories = ['Tehnologija', "Zdravje", "Izobraževanje", "Zabava", "Šport", "Poslovanje", "Potovanja",
+    "Življenjski slog", "Znanost", "Hrana", "Umetnost", "Moda", "Avtomobilizem", "Narava", "Kultura", "Glasba",
+    "Filmi", "Politika", "Prosti čas","Drugo"
+  ];
+
+  const filteredPosts = selectedCategory
+      ? posts.filter((post) => {
+        const postCategory = post.category;
+        const filterCategory = selectedCategory;
+
+        console.log(
+            `Post category (cleaned): "${postCategory}", Filter category: "${filterCategory}"`
+        );
+
+        return postCategory === filterCategory;
+      })
+      : posts;
+
+
+
+  //console.log('Posts Categories:', posts.map((post) => `"${post.category}"`));
+
+
+
 
   const loadPosts = () => {
     setLoading(true);
@@ -99,7 +129,10 @@ const Posts: React.FC = () => {
 
   useEffect(() => {
     loadPosts();
-  }, []);
+    if (initialCategory) {
+      setSelectedCategory(initialCategory);
+    }
+  }, [initialCategory]);
 
   const handlePostAdded = () => {
     loadPosts();
@@ -160,11 +193,40 @@ const Posts: React.FC = () => {
       <Heading as="h2" size="xl" mb={6} textAlign="center">
         Forum - Objave
       </Heading>
-      {user && (
-        <Button onClick={onOpen} colorScheme="blue" mb={6}>
-          Dodaj novo objavo
-        </Button>
-      )}
+
+      {/* Align gumb in filter */}
+      <Box mb={6}>
+        <Flex
+            direction={{ base: 'column', md: 'row' }}
+            align="center"
+            justify="space-between"
+        >
+          {/* Nov Post */}
+          {user && (
+              <Button onClick={onOpen} colorScheme="blue" mb={{ base: 4, md: 0 }}>
+                Dodaj novo objavo
+              </Button>
+          )}
+
+          {/* Dropdown za filter */}
+          <Box maxW="300px" width="100%" textAlign={{ base: 'center', md: 'right' }}>
+            <Select
+                placeholder="Izberite kategorijo"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+              ))}
+            </Select>
+          </Box>
+        </Flex>
+      </Box>
+
+
+
       {loading ? (
         <Box textAlign="center" mt={8}>
           <Spinner size="xl" />
@@ -173,10 +235,15 @@ const Posts: React.FC = () => {
         <Text fontSize="lg" color="gray.500" textAlign="center" mt={8}>
           Trenutno ni nobenih objav.
         </Text>
+      ) : filteredPosts.length === 0 ? (
+          // Case: Posts exist but none match the selected category
+          <Text fontSize="lg" color="gray.500" textAlign="center" mt={8}>
+            Ni objav za izbrano kategorijo.
+          </Text>
       ) : (
         <Stack spacing={6}>
           <HotPostsRibbon hotPosts={hotPosts} />
-          {posts.map((post) => (
+          {filteredPosts.map((post) => (
             <Box
               key={post._id}
               p={5}

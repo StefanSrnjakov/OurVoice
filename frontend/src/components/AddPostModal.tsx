@@ -13,7 +13,7 @@ import {
   FormLabel,
   Input,
   Textarea,
-  useToast,
+  useToast, Select,
 } from '@chakra-ui/react';
 import { UserContext } from '../userContext';
 import { Post } from '../interfaces/Post';
@@ -39,6 +39,11 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
   const toast = useToast();
   const titleInputRef = useRef<HTMLInputElement>(null);
 
+  const categories = ["Tehnologija", "Zdravje", "Izobraževanje", "Zabava", "Šport", "Poslovanje", "Potovanja",
+    "Življenjski slog", "Znanost", "Hrana", "Umetnost", "Moda", "Avtomobilizem", "Narava", "Kultura", "Glasba",
+    "Filmi", "Politika", "Prosti čas","Drugo"
+  ];
+
   // Populate fields when post is provided (for editing)
   useEffect(() => {
     if (post) {
@@ -49,7 +54,7 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
     } else {
       setTitle('');
       setContent('');
-      setCategory('');
+      setCategory('Drugo');
       setImage(null);
     }
   }, [post]);
@@ -160,11 +165,17 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
           </FormControl>
           <FormControl mb={4}>
             <FormLabel>Kategorija</FormLabel>
-            <Input
-              placeholder="Vnesite kategorijo"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            />
+            <Select
+                placeholder="Izberite kategorijo"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+            >
+              {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+              ))}
+            </Select>
           </FormControl>
           <FormControl mb={4}>
             <FormLabel>Slika</FormLabel>
