@@ -35,6 +35,7 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('');
+  const [image, setImage] = useState<string | null>(null); 
   const toast = useToast();
   const titleInputRef = useRef<HTMLInputElement>(null);
 
@@ -49,12 +50,39 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
       setTitle(post.title);
       setContent(post.content);
       setCategory(post.category);
+      setImage(post.image ?? null);
     } else {
       setTitle('');
       setContent('');
       setCategory('Drugo');
+      setImage(null);
     }
   }, [post]);
+
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file); // Convert file to Base64
+    });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      convertFileToBase64(file)
+        .then((base64) => setImage(base64))
+        .catch(() => {
+          toast({
+            title: 'Greška pri učitavanju slike.',
+            status: 'error',
+          });
+        });
+    } else {
+      setImage(null);
+    }
+  };
 
   const handleSubmit = () => {
     if (!user) {
@@ -67,6 +95,15 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
       : 'http://localhost:3000/post';
     const method = post ? 'PUT' : 'POST';
 
+    const payload = {
+      title,
+      content,
+      category,
+      image, 
+      userId: user._id,
+    };  
+    console.log('Payload:', payload);
+
     fetch(url, {
       method: method,
       headers: { 'Content-Type': 'application/json' },
@@ -74,6 +111,7 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
         title,
         content,
         category,
+        image,
         userId: user._id, // Include userId
       }),
     })
@@ -138,6 +176,13 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
                   </option>
               ))}
             </Select>
+          </FormControl>
+          <FormControl mb={4}>
+            <FormLabel>Slika</FormLabel>
+            <Input
+              type="file"
+              onChange={handleImageChange}
+            />
           </FormControl>
           <FormControl mb={4}>
             <FormLabel>Vsebina</FormLabel>

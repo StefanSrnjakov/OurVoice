@@ -17,6 +17,8 @@ router.get('/:id', PostController.show);
 
 router.post('/', PostController.create);
 
+router.put('/report/:id', PostController.report);
+
 router.put('/:id/toggle-like', PostController.toggleLike);
 router.put('/:id/toggle-dislike', PostController.toggleDislike);
 

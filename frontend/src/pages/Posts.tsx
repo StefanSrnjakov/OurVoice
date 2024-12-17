@@ -9,17 +9,20 @@ import {
   useDisclosure,
   IconButton,
   Select,
+  Image,
   Flex,
 } from '@chakra-ui/react';
 import { UserContext } from '../userContext';
 import AddPostModal from '../components/AddPostModal';
 import { Post } from '../interfaces/Post';
 import { Link } from 'react-router-dom';
-import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 import { useSearchParams } from 'react-router-dom';
+import { FaThumbsUp, FaThumbsDown, FaEye, FaFlag } from 'react-icons/fa';
+import HotPostsRibbon from '../components/HotPostsRibbon';
 
 const Posts: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [hotPosts, setHotPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null); // Track selected post for editing
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -55,6 +58,20 @@ const Posts: React.FC = () => {
 
   const loadPosts = () => {
     setLoading(true);
+    fetch('http://localhost:3000/post?hot=true')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setHotPosts(data);
+      })
+      .catch((error) => {
+        console.error('Napaka pri pridobivanju objav:', error);
+      });
+
     fetch('http://localhost:3000/post')
       .then((response) => {
         if (!response.ok) {
@@ -74,32 +91,41 @@ const Posts: React.FC = () => {
 
   const handleLikeDislike = async (postId: string, action: 'like' | 'dislike') => {
     const actionParam = action === 'like' ? 'toggle-like' : 'toggle-dislike';
-  
+
     try {
       const response = await fetch(`http://localhost:3000/post/${postId}/${actionParam}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId: user?._id }),
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: user?._id }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to update like/dislike');
       }
-  
-      const updatedPost = await response.json();
-  
+
+      const updatedPostResponse = await response.json();
+
+      const updatedPost: Post = updatedPostResponse.post;
       // Update the specific post in the state
       setPosts((prevPosts) =>
-        prevPosts.map((post) => (post._id === updatedPost.post._id ? updatedPost.post : post))
+        prevPosts.map((post) => {
+          if (post._id === updatedPost._id) {
+            return {
+              ...post,
+              likes: updatedPost.likes,
+              dislikes: updatedPost.dislikes,
+            };
+          }
+          return post;
+        })
       );
+      
     } catch (error) {
       console.error('Napaka pri posodobitvi lajkov/dislajkov:', error);
     }
   };
-  
-  
 
   useEffect(() => {
     loadPosts();
@@ -132,6 +158,34 @@ const Posts: React.FC = () => {
       .catch((error) => {
         console.error('Napaka pri brisanju objave:', error);
       });
+  };
+
+  const handleReport = async (postId: string) => {
+    try {
+      const response = await fetch(`http://localhost:3000/post/report/${postId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: user?._id }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to report post');
+      }
+  
+      const data = await response.json();
+      if (data.message === 'You have already reported this post') {
+        alert('Već ste prijavili ovu objavu.');
+      } else if (data.message === 'Post deleted due to excessive reports') {
+        alert('Ova objava je obrisana zbog prekomernog broja prijava.');
+      } else {
+        alert('Prijava uspešno poslata. Hvala vam!');
+      }
+    } catch (error) {
+      console.error('Napaka pri prijavi objave:', error);
+      alert('Došlo je do greške prilikom slanja prijave.');
+    }
   };
 
   return (
@@ -174,7 +228,9 @@ const Posts: React.FC = () => {
 
 
       {loading ? (
-        <Spinner size="xl" />
+        <Box textAlign="center" mt={8}>
+          <Spinner size="xl" />
+        </Box>
       ) : posts.length === 0 ? (
         <Text fontSize="lg" color="gray.500" textAlign="center" mt={8}>
           Trenutno ni nobenih objav.
@@ -186,6 +242,7 @@ const Posts: React.FC = () => {
           </Text>
       ) : (
         <Stack spacing={6}>
+          <HotPostsRibbon hotPosts={hotPosts} />
           {filteredPosts.map((post) => (
             <Box
               key={post._id}
@@ -200,8 +257,31 @@ const Posts: React.FC = () => {
                 Kategorija: {post.category}
               </Text>
               <Text mt={2} fontSize="sm" color="gray.500">
-                Avtor: {post?.userId?.username || 'Neznan uporabnik'}
+                Avtor:{' '}
+                <Link to={`/user/${post.userId?._id}`}>
+                  {post?.userId?.username || 'Neznan uporabnik'}
+                </Link>
               </Text>
+              <Text mt={2} fontSize="sm" color="gray.500">
+                <Flex align="center">
+                  <FaEye color="gray.500" style={{ marginRight: '4px' }} />{' '}
+                  <strong>{post.views}</strong>
+                </Flex>
+              </Text>
+              {post.image && (
+                <Box mt={4}>
+                  <Image
+                    src={post.image} // Prikazivanje slike (Base64 string ili URL)
+                    alt={post.title}
+                    borderRadius="md"
+                    mb={2}
+                    width="100%"
+                    height="auto"
+                    maxHeight="250px"
+                    objectFit="cover"
+                  />
+                </Box>
+              )}
               <Box mt={4} display="flex" alignItems="center">
                 <IconButton
                   icon={<FaThumbsUp />}
@@ -220,6 +300,13 @@ const Posts: React.FC = () => {
                   mr={2}
                 />
                 <Text>{post.dislikes.length}</Text>
+                <IconButton
+                  icon={<FaFlag />}
+                  aria-label="Report"
+                  onClick={() => handleReport(post._id)}
+                  colorScheme="yellow"
+                  ml={4}
+                />
               </Box>
               <Link to={`/posts/${post._id}`}>
                 <Button colorScheme="teal" mt={4}>
