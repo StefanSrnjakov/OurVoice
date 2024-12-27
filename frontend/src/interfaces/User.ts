@@ -6,4 +6,10 @@ export interface User {
   password: string;
   name: string;
   createdAt: string;
+  userReports: [{ 
+		reportingUserId: string,
+		reportReason: string 
+	}],
+  isBanned: boolean;
+  role: string;
 }

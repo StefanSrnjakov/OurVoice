@@ -12,6 +12,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ user, element }) => {
   if (!user) {
     return <Navigate to="/login" replace />;
   }
+  if (user.isBanned) {
+    return <Navigate to="/banned" replace />;
+  }
 
   // If the user is authenticated, render the requested element
   return element;

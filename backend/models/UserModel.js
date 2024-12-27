@@ -1,22 +1,20 @@
 var mongoose = require('mongoose');
 var Schema   = mongoose.Schema;
 var bcrypt = require('bcrypt');
+const { ObjectId } = require('mongodb');
 var SALT_WORK_FACTOR = 10;
 
 var UserSchema = new Schema({
 	username: { type: String, required: true, unique: true },
 	email: { type: String, required: true, unique: true, match: /.+\@.+\..+/ },
-    password: { type: String, required: true,
-		validate: {
-			validator: function(v) {
-				return /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(v); 
-			}, 
-			message: props => 'Geslo mora biti dolgo vsaj 8 znakov in vsebovati vsaj eno veliko črko in eno številko.' 
-		} 
-	},
+    password: { type: String, required: true},
     role: { type: String, enum: ['user', 'moderator', 'admin'], default: 'user' },
     bio: { type: String, default: '', },
 	avatar: { type: String, default: ''},
+	userReports: [{ 
+		reportingUserId: {type: Schema.Types.ObjectId, ref: 'users'},
+		reportReason: {type: String} 
+	}],
     isBanned: { type: Boolean, default: false },
 	createdAt: { type: Date, default: Date.now }
 });

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Box,
@@ -9,16 +9,32 @@ import {
   Divider,
   VStack,
   Image,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
+  ModalFooter,
+  Input,
+  Textarea,
+  useToast,
 } from '@chakra-ui/react';
 import { Post } from '../interfaces/Post';
 import { User } from '../interfaces/User';
 import { Link } from 'react-router-dom';
+import { UserContext } from '../userContext';
 
 const UserProfile: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
   const [profile, setProfile] = useState<User | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const { user } = useContext(UserContext);
+  const [reportReason, setReportReason] = useState<string>('');
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
 
   useEffect(() => {
     if (!userId) return;
@@ -46,6 +62,55 @@ const UserProfile: React.FC = () => {
       });
   }, [userId]);
 
+  const handleReportSubmit = async () => {
+    if (!reportReason.trim()) {
+      toast({
+        title: 'Napaka.',
+        description: 'Prosim, vnesite razlog za prijavo.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3000/user/report/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reportingUserId: user?._id,
+          reason: reportReason,
+        }),
+      });
+
+      if (!response.ok) {
+        // Extract error message from the response
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to report user');
+      }
+
+      toast({
+        title: 'Uspešno.',
+        description: 'Uporabnik je bil uspešno prijavljen.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      onClose();
+    } catch (error: any) {
+      toast({
+        title: 'Napaka.',
+        description: error.message || 'Pri prijavi uporabnika je prišlo do napake.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   if (loading) {
     return <Spinner size="xl" />;
   }
@@ -68,7 +133,6 @@ const UserProfile: React.FC = () => {
     >
       {profile ? (
         <>
-          {/* User Profile Information */}
           <Heading as="h2" size="xl" mb={4} textAlign="center" color="teal.600">
             Profil uporabnika {profile.username}
           </Heading>
@@ -95,12 +159,14 @@ const UserProfile: React.FC = () => {
             </Text>
           </Box>
 
-          <Divider mb={4} />
-
+          <Button colorScheme="red" onClick={onOpen}>
+            Prijavi uporabnika
+          </Button>
+          <br/>
+          <br/>
           <Heading as="h3" size="md" mb={4}>
             Objave uporabnika
           </Heading>
-
           {posts.length > 0 ? (
             <VStack spacing={4} align="start">
               {posts.map((post) => (
@@ -134,7 +200,7 @@ const UserProfile: React.FC = () => {
                     <strong>Dislikes:</strong> {post.dislikes.length} dislikes
                   </Text>
                   <Link to={`/posts/${post._id}`}>
-                    <Button colorScheme="teal" onClick={() => {}} w="full">
+                    <Button colorScheme="teal" w="full">
                       Ogled objave
                     </Button>
                   </Link>
@@ -148,6 +214,28 @@ const UserProfile: React.FC = () => {
       ) : (
         <Text color="red.500">Uporabnik ni najden.</Text>
       )}
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Prijavi uporabnika</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Textarea
+              placeholder="Vnesite razlog za prijavo"
+              value={reportReason}
+              onChange={(e) => setReportReason(e.target.value)}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="red" onClick={handleReportSubmit}>
+              Pošlji prijavo
+            </Button>
+            <Button ml={3} onClick={onClose}>
+              Prekliči
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };

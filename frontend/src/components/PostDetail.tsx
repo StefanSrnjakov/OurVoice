@@ -97,7 +97,7 @@ const PostDetail: React.FC = () => {
       return;
     }
 
-    if (!user) {
+    if (!user || user.isBanned) {
       alert('Prijavite se za dodajanje komentarja.');
       return;
     }
@@ -129,7 +129,7 @@ const PostDetail: React.FC = () => {
   };
 
   const handleCommentDelete = (commentId: string) => {
-    if (!user) {
+    if (!user || user.isBanned) {
       alert('Prijavite se za brisanje komentarja.');
       return;
     }

@@ -24,6 +24,8 @@ router.post('/login', UserController.login);
  * PUT
  */
 router.put('/:id', UserController.update);
+router.put('/report/:reportedUserId', UserController.report);
+router.put('/ban/:id', UserController.ban);
 
 /*
  * DELETE
