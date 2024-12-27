@@ -1,4 +1,0 @@
-slike na objave, 
-hot objave, 
-likes-dislike na objave,
-likes-dislike na komentare,

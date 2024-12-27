@@ -202,7 +202,7 @@ const Posts: React.FC = () => {
             justify="space-between"
         >
           {/* Nov Post */}
-          {user && (
+          {user && !user.isBanned && (
               <Button onClick={onOpen} colorScheme="blue" mb={{ base: 4, md: 0 }}>
                 Dodaj novo objavo
               </Button>

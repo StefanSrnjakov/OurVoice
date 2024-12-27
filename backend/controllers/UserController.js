@@ -13,10 +13,7 @@ module.exports = {
      * UserController.list()
      */
     list: function (req, res) {
-        console.log('tuka stiga');
         UserModel.find().select('-password').exec(function (err, Users) {
-            console.log(err);
-            console.log(Users);
             if (err) {
                 return res.status(500).json({
                     message: 'Error when getting User.',
@@ -25,7 +22,6 @@ module.exports = {
             }
 
             return res.json(Users);
-            //return res.render('user/list', {data:Users, userId:req.session.userId , username:req.session.username} );
 
         });
     },
@@ -118,7 +114,62 @@ module.exports = {
         });
     });
     },
-
+    ban: async function (req, res) {
+        try {
+            const { id } = req.params;
+            const { isBanned } = req.body;
+            console.log(req.body);
+            if (isBanned === undefined) {
+                return res.status(400).json({ message: 'Polje isBanned je obvezno.' });
+            }
+            const user = await UserModel.findById(id);
+            if (!user) {
+                return res.status(404).json({ message: 'Uporabnik ne obstaja.' });
+            }
+            user.isBanned = isBanned;
+            await user.save();
+            return res.status(200).json({ message: 'Uporabnik je bil uspešno ' + (isBanned ? 'blokiran.' : 'odblokiriran.') });
+        } catch (error) {
+            return res.status(500).json({ message: 'Pri blokiranju uporabnika je prišlo do napake.', error });
+        }
+    },
+    report: async function (req, res) {
+        try {
+            const { reportedUserId } = req.params; 
+            const { reason, reportingUserId } = req.body;
+    
+            if (!reason || reason.trim() === '') {
+                return res.status(400).json({ message: 'Razlog za prijavo je obvezen.' });
+            }
+            if (!reportingUserId) {
+                return res.status(400).json({ message: 'ID uporabnika, ki prijavlja, je obvezen.' });
+            }
+    
+            const reportedUser = await UserModel.findById(reportedUserId);
+            if (!reportedUser) {
+                return res.status(404).json({ message: 'Uporabnik, ki ga želite prijaviti, ne obstaja.' });
+            }
+    
+            const alreadyReported = reportedUser.userReports.some(
+                (report) => report.reportingUserId.toString() === reportingUserId
+            );
+            if (alreadyReported) {
+                return res.status(400).json({ message: 'Tega uporabnika ste že prijavili.' });
+            }
+    
+            reportedUser.userReports.push({
+                reportingUserId,
+                reportReason: reason,
+            });
+    
+            await reportedUser.save();
+    
+            return res.status(200).json({ message: 'Uporabnik je bil uspešno prijavljen.' });
+        } catch (error) {
+            console.error('Napaka v funkciji za prijavo:', error);
+            return res.status(500).json({ message: 'Pri prijavi uporabnika je prišlo do napake.', error });
+        }
+    },
     /**
      * UserController.update()
      */

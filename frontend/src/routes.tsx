@@ -6,8 +6,9 @@ import Posts from './pages/Posts';
 import Profile from './pages/Profile';
 import Register from './pages/Register';
 import Categories from './pages/Categories';
-import PostDetail from './components/PostDetail'; // Dodaj import za PostDetail
 import UserProfile from './pages/User';
+import PenalUsers from './pages/PenalUsers';
+import Banned from './pages/Banned';
 
 export const publicRoutes = [
   { name: 'Domov', to: '/', visible: true, element: <Home /> },
@@ -20,6 +21,9 @@ export const publicRoutes = [
   },
   { name: 'Kategorije', to: '/categories', visible: true, element: <Categories /> },
   { name: 'Objave', to: '/posts', visible: true, element: <Posts /> },
+  { name: 'Blokiran uporabnik', to: '/banned', visible: false, element: <Banned /> },
+  { name: 'Odjava', to: '/logout', visible: false, element: <Logout /> },
+
 ];
 
 export const protectedRoutes = [
@@ -28,6 +32,7 @@ export const protectedRoutes = [
   { name: 'Profil', to: '/profile', visible: true, element: <Profile /> },
   { name: 'Kategorije', to: '/categories', visible: true, element: <Categories /> },
   { name: 'Odjava', to: '/logout', visible: true, element: <Logout /> },
+  { name: 'Seznam uporabnikov', to: '/users', visible: false, element: <PenalUsers /> },
   {
     name: 'Profil',
     to: '/user/:userId',
