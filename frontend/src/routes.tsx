@@ -9,6 +9,7 @@ import Categories from './pages/Categories';
 import UserProfile from './pages/User';
 import PenalUsers from './pages/PenalUsers';
 import Banned from './pages/Banned';
+import ReportedPosts from './pages/ReportedPosts';
 
 export const publicRoutes = [
   { name: 'Domov', to: '/', visible: true, element: <Home /> },
@@ -33,6 +34,7 @@ export const protectedRoutes = [
   { name: 'Kategorije', to: '/categories', visible: true, element: <Categories /> },
   { name: 'Odjava', to: '/logout', visible: true, element: <Logout /> },
   { name: 'Seznam uporabnikov', to: '/users', visible: false, element: <PenalUsers /> },
+  { name: 'Seznam prijavljenih objav', to: '/reported', visible: false, element: <ReportedPosts /> },
   {
     name: 'Profil',
     to: '/user/:userId',

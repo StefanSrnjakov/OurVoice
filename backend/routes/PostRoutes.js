@@ -12,7 +12,7 @@ function requiresLogin(req, res, next){
     }
 }
 router.get('/', PostController.list);
-
+router.get('/reported', PostController.getReportedPosts);
 router.get('/:id', PostController.show);
 
 router.post('/', PostController.create);

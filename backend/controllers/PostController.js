@@ -154,12 +154,23 @@ module.exports = {
     });
   },
 
+  getReportedPosts: async function (req, res) {
+    try {
+        const reportedPosts = await PostModel.find({ reports: { $exists: true, $ne: [] } })
+            .populate('userId', 'username email') 
+          //  .populate('comments', 'content userId')
+            .exec();
+
+        res.status(200).json(reportedPosts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch reported posts' });
+    }
+  },
+
   report: function (req, res) {
     const { id } = req.params;
     const { userId } = req.body;
-
-    console.log(id);
-    console.log(userId);
 
     PostModel.findOne({ _id: id }, function (err, post) {
       if (err) {
