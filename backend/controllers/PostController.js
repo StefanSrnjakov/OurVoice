@@ -11,7 +11,38 @@ const PostViewLogModel = require('../models/PostViewLogModel');
 
 module.exports = {
   list: async function (req, res) {
-    const { userId } = req.query;
+    const { userId, pagination = false, page = 1, limit = 5 } = req.query;
+
+    if (pagination === 'true') {
+      try{
+        const filter = userId ? { userId } : {};
+        const skip = (Number(page) - 1) * Number(limit);
+        const posts = await PostModel.find(filter)
+          .sort({ createdAt: -1 })
+          .populate('userId', 'username')
+          .skip(skip)
+          .limit(Number(limit))
+          .exec();
+
+        const postsWithViews = await Promise.all(
+          posts.map(async (post) => {
+            const viewCount = await PostViewLogModel.countDocuments({ postId: post._id });
+            return {
+              ...post.toObject(),
+              views: viewCount,
+            };
+          })
+        );
+
+        return res.json(postsWithViews);
+      } catch (err) {
+        console.error('Error when getting Posts:', err);
+        return res.status(500).json({
+          message: 'Error when getting Posts.',
+          error: err,
+        });
+      }
+    }
   
     if (req.query.hot === 'true') {
       try {
@@ -53,6 +84,7 @@ module.exports = {
         const postIds = hotPostsData.map(item => item._id);
     
         const posts = await PostModel.find({ _id: { $in: postIds } })
+          .sort({ createdAt: -1 })
           .populate('userId', 'username')
           .lean();
     
@@ -73,6 +105,7 @@ module.exports = {
     try {
       const filter = userId ? { userId } : {};
       const posts = await PostModel.find(filter)
+        .sort({ createdAt: -1 })
         .populate('userId', 'username')
         .exec();
   

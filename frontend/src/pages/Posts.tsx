@@ -80,7 +80,7 @@ const Posts: React.FC = () => {
         return response.json();
       })
       .then((data) => {
-        setPosts(data.reverse());
+        setPosts(data);
         setLoading(false);
       })
       .catch((error) => {

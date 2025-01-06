@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useContext, useEffect, useState, useRef } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import {
   Box,
   Heading,
@@ -17,9 +17,10 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalFooter,
-  Input,
   Textarea,
   useToast,
+  Select,
+  HStack,
 } from '@chakra-ui/react';
 import { Post } from '../interfaces/Post';
 import { User } from '../interfaces/User';
@@ -27,10 +28,15 @@ import { Link } from 'react-router-dom';
 import { UserContext } from '../userContext';
 
 const UserProfile: React.FC = () => {
+  const objaveRef = useRef<HTMLDivElement>(null);
   const { userId } = useParams<{ userId: string }>();
   const [profile, setProfile] = useState<User | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const limit = parseInt(searchParams.get('limit') || '5', 10);
   const [loading, setLoading] = useState<boolean>(false);
+  const [postsLoading, setPostsLoading] = useState<boolean>(false);
   const { user } = useContext(UserContext);
   const [reportReason, setReportReason] = useState<string>('');
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -39,28 +45,44 @@ const UserProfile: React.FC = () => {
   useEffect(() => {
     if (!userId) return;
 
-    setLoading(true);
+    if (!profile) {
+      setLoading(true);
 
-    fetch(`http://localhost:3000/user/${userId}`)
+      fetch(`http://localhost:3000/user/${userId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setProfile(data);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error fetching user profile:', error);
+          setLoading(false);
+        });
+    }
+
+    setPostsLoading(true);
+    fetch(
+      `http://localhost:3000/post?userId=${userId}&page=${page}&limit=${limit}&pagination=true`
+    )
       .then((response) => response.json())
       .then((data) => {
-        setProfile(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching user profile:', error);
-        setLoading(false);
-      });
-
-    fetch(`http://localhost:3000/post?userId=${userId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setPosts(data.reverse());
+        setPosts(data);
+        setPostsLoading(false);
       })
       .catch((error) => {
         console.error('Error fetching user posts:', error);
       });
-  }, [userId]);
+  }, [userId, page, limit, profile]);
+
+  useEffect(() => {
+    scrollToPosts();
+  }, [posts]);
+
+  const scrollToPosts = () => {
+    if (objaveRef.current) {
+      objaveRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const handleReportSubmit = async () => {
     if (!reportReason.trim()) {
@@ -164,10 +186,14 @@ const UserProfile: React.FC = () => {
           </Button>
           <br/>
           <br/>
-          <Heading as="h3" size="md" mb={4}>
+          <Heading ref={objaveRef} as="h3" size="md" mb={4}>
             Objave uporabnika
           </Heading>
-          {posts.length > 0 ? (
+          {postsLoading ? (
+            <Box textAlign="center" mt={8}>
+              <Spinner size="xl" />
+            </Box>
+          ) : posts.length > 0 ? (
             <VStack spacing={4} align="start">
               {posts.map((post) => (
                 <Box
@@ -210,6 +236,43 @@ const UserProfile: React.FC = () => {
           ) : (
             <Text color="gray.500">Ni objav za tega uporabnika.</Text>
           )}
+          <HStack mt={6} justifyContent="space-between">
+            <Button
+              onClick={() => {
+                setSearchParams({
+                  page: String(Math.max(page - 1, 1)),
+                  limit: String(limit),
+                });
+              }}
+              isDisabled={page === 1 || postsLoading}
+            >
+              Prejšnja stran
+            </Button>
+            <Text>Stran {page}</Text>
+            <Button
+              onClick={() => {
+                setSearchParams({
+                  page: String(page + 1),
+                  limit: String(limit),
+                });
+              }}
+              isDisabled={posts.length < limit || postsLoading}
+            >
+              Naslednja stran
+            </Button>
+          </HStack>
+          <Box mt={4}>
+            <Select
+              value={limit}
+              onChange={(e) => {
+                setSearchParams({ page: String(page), limit: e.target.value });
+              }}
+            >
+              <option value={5}>5 objav na stran</option>
+              <option value={10}>10 objav na stran</option>
+              <option value={15}>15 objav na stran</option>
+            </Select>
+          </Box>
         </>
       ) : (
         <Text color="red.500">Uporabnik ni najden.</Text>
