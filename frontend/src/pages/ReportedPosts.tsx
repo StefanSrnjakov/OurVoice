@@ -15,13 +15,14 @@ import {
     Flex
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
+import { API_URL } from '../config';
 
 const ReportedPosts: React.FC = () => {
     const [posts, setPosts] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        fetch('http://localhost:3000/post/reported')
+        fetch(`${API_URL}/post/reported`)
             .then((response) => response.json())
             .then((data) => {
                 setPosts(data);
@@ -35,7 +36,7 @@ const ReportedPosts: React.FC = () => {
 
     const deletePost = async (postId: string) => {
         try {
-            const response = await fetch(`http://localhost:3000/post/${postId}`, {
+            const response = await fetch(`${API_URL}/post/${postId}`, {
                 method: 'DELETE',
             });
             if (!response.ok) {

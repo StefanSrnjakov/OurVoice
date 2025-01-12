@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Box, Heading, Text, List, ListItem, Spinner } from '@chakra-ui/react';
 import { UserContext } from '../userContext';
+import { API_URL } from '../config';
 
 const Banned: React.FC = () => {
   const { user, setUserContext } = useContext(UserContext); // Access user and setUserContext from context
@@ -13,7 +14,7 @@ const Banned: React.FC = () => {
     }
 
     // Fetch banned user data using the user ID from context
-    fetch(`http://localhost:3000/user/${user._id}`)
+    fetch(`${API_URL}/user/${user._id}`)
       .then((response) => response.json())
       .then((data) => {
         if (data) {

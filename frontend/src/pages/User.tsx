@@ -26,6 +26,7 @@ import { Post } from '../interfaces/Post';
 import { User } from '../interfaces/User';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../userContext';
+import { API_URL } from '../config';
 
 const UserProfile: React.FC = () => {
   const objaveRef = useRef<HTMLDivElement>(null);
@@ -48,7 +49,7 @@ const UserProfile: React.FC = () => {
     if (!profile) {
       setLoading(true);
 
-      fetch(`http://localhost:3000/user/${userId}`)
+      fetch(`${API_URL}/user/${userId}`)
         .then((response) => response.json())
         .then((data) => {
           setProfile(data);
@@ -62,7 +63,7 @@ const UserProfile: React.FC = () => {
 
     setPostsLoading(true);
     fetch(
-      `http://localhost:3000/post?userId=${userId}&page=${page}&limit=${limit}&pagination=true`
+      `${API_URL}/post?userId=${userId}&page=${page}&limit=${limit}&pagination=true`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -97,7 +98,7 @@ const UserProfile: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/user/report/${userId}`, {
+      const response = await fetch(`${API_URL}/user/report/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

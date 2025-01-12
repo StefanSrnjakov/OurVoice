@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { UserContext, UserContextType } from '../userContext';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../config';
 
 // TODO - Add validation for input fields
 // TODO - Display differend errors (from backend) for failed registration
@@ -32,7 +33,7 @@ const Register: React.FC = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch('http://localhost:3000/user', {
+      const res = await fetch(`${API_URL}/user`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password, email }),

@@ -16,6 +16,7 @@ import {
 import { Link } from 'react-router-dom';
 import { UserContext } from '../userContext'; // Import your UserContext
 import { User } from '../interfaces/User';
+import { API_URL } from '../config';
 
 const PenalUsers: React.FC = () => {
     const { user } = useContext(UserContext); // Access the logged-in user's role
@@ -28,7 +29,7 @@ const PenalUsers: React.FC = () => {
         }
 
         setLoading(true);
-        fetch('http://localhost:3000/user')
+        fetch(`${API_URL}/user`)
             .then((response) => response.json())
             .then((data) => {
                 // Sort users by the number of reports in descending order
@@ -46,7 +47,7 @@ const PenalUsers: React.FC = () => {
 
     const toggleBanUser = async (userId: string, isBanned: boolean) => {
         try {
-            const response = await fetch(`http://localhost:3000/user/ban/${userId}`, {
+            const response = await fetch(`${API_URL}/user/ban/${userId}`, {
                 method: 'PUT',
                 body: JSON.stringify({ isBanned: !isBanned }),
                 headers: {

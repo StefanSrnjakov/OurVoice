@@ -17,6 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { UserContext } from '../userContext';
 import { Post } from '../interfaces/Post';
+import { API_URL } from '../config';
 
 interface AddPostModalProps {
   isOpen: boolean;
@@ -91,8 +92,8 @@ const AddPostModal: React.FC<AddPostModalProps> = ({
     }
 
     const url = post
-      ? `http://localhost:3000/post/${post._id}`
-      : 'http://localhost:3000/post';
+      ? `${API_URL}/post/${post._id}`
+      : `${API_URL}/post`;
     const method = post ? 'PUT' : 'POST';
 
     const payload = {

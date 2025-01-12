@@ -14,6 +14,7 @@ import {
   Checkbox,
 } from '@chakra-ui/react';
 import { UserContext, UserContextType } from '../userContext';
+import { API_URL } from '../config';
 
 // TODO - Add validation for input fields
 // TODO - Display differend errors (from backend) for failed registration
@@ -31,7 +32,7 @@ const Login: React.FC = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch('http://localhost:3000/user/login', {
+      const res = await fetch(`${API_URL}/user/login`, {
         method: 'POST',
         //credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

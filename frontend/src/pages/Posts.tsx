@@ -19,6 +19,7 @@ import { Link } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import { FaThumbsUp, FaThumbsDown, FaEye, FaFlag } from 'react-icons/fa';
 import HotPostsRibbon from '../components/HotPostsRibbon';
+import { API_URL } from '../config';
 
 const Posts: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -58,7 +59,7 @@ const Posts: React.FC = () => {
 
   const loadPosts = () => {
     setLoading(true);
-    fetch('http://localhost:3000/post?hot=true')
+    fetch(`${API_URL}/post?hot=true`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -72,7 +73,7 @@ const Posts: React.FC = () => {
         console.error('Napaka pri pridobivanju objav:', error);
       });
 
-    fetch('http://localhost:3000/post')
+    fetch(`${API_URL}/post`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -93,7 +94,7 @@ const Posts: React.FC = () => {
     const actionParam = action === 'like' ? 'toggle-like' : 'toggle-dislike';
 
     try {
-      const response = await fetch(`http://localhost:3000/post/${postId}/${actionParam}`, {
+      const response = await fetch(`${API_URL}/post/${postId}/${actionParam}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -145,7 +146,7 @@ const Posts: React.FC = () => {
   };
 
   const handleDeletePost = (id: string) => {
-    fetch(`http://localhost:3000/post/${id}`, {
+    fetch(`${API_URL}/post/${id}`, {
       method: 'DELETE',
     })
       .then((response) => {
@@ -162,7 +163,7 @@ const Posts: React.FC = () => {
 
   const handleReport = async (postId: string) => {
     try {
-      const response = await fetch(`http://localhost:3000/post/report/${postId}`, {
+      const response = await fetch(`${API_URL}/post/report/${postId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

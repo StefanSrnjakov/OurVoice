@@ -30,6 +30,7 @@ import {
 import { UserContext } from '../userContext';
 import { FaEye, FaFlag } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { API_URL } from '../config';
 
 interface User {
   username: string;
@@ -68,7 +69,7 @@ const PostDetail: React.FC = () => {
 
   const fetchPost = useCallback(() => {
     setLoading(true);
-    fetch(`http://localhost:3000/post/${id}?userId=${user?._id}`)
+    fetch(`${API_URL}/post/${id}?userId=${user?._id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -102,7 +103,7 @@ const PostDetail: React.FC = () => {
       return;
     }
 
-    fetch(`http://localhost:3000/post/${id}/comment`, {
+    fetch(`${API_URL}/post/${id}/comment`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -134,7 +135,7 @@ const PostDetail: React.FC = () => {
       return;
     }
 
-    fetch(`http://localhost:3000/post/${id}/comment/${commentId}`, {
+    fetch(`${API_URL}/post/${id}/comment/${commentId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -152,7 +153,7 @@ const PostDetail: React.FC = () => {
   };
   const handleReport = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/post/report/${id}`, {
+      const response = await fetch(`${API_URL}/post/report/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
