@@ -18,4 +18,4 @@ COPY --from=frontend-builder /app/frontend/build ./public
 EXPOSE 5000
 
 # Start the server
-CMD ["node", "server.js"]
+CMD ["node", "./bin/www"]
