@@ -1,4 +1,3 @@
-// components/Profile.tsx
 import React, { useContext } from 'react';
 import { Box, Heading, Text, Button, Stack } from '@chakra-ui/react';
 import { UserContext } from '../userContext';

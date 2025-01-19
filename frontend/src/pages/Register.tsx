@@ -114,6 +114,7 @@ const Register: React.FC = () => {
           <FormControl id="password" isRequired>
             <FormLabel fontSize="lg">Geslo</FormLabel>
             <Input
+              data-testid="Geslo"
               type={showPassword ? 'text' : 'password'} // Uporabi 'text' ali 'password' glede na stanje
               placeholder="Vnesite geslo"
               value={password}

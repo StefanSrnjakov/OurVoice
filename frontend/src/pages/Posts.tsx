@@ -230,7 +230,7 @@ const Posts: React.FC = () => {
 
       {loading ? (
         <Box textAlign="center" mt={8}>
-          <Spinner size="xl" />
+          <Spinner data-testid="loading-spinner" size="xl" />
         </Box>
       ) : posts.length === 0 ? (
         <Text fontSize="lg" color="gray.500" textAlign="center" mt={8}>
