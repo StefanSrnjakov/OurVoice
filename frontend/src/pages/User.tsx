@@ -126,7 +126,8 @@ const UserProfile: React.FC = () => {
     } catch (error: any) {
       toast({
         title: 'Napaka.',
-        description: error.message || 'Pri prijavi uporabnika je prišlo do napake.',
+        description:
+          error.message || 'Pri prijavi uporabnika je prišlo do napake.',
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -185,8 +186,8 @@ const UserProfile: React.FC = () => {
           <Button colorScheme="red" onClick={onOpen}>
             Prijavi uporabnika
           </Button>
-          <br/>
-          <br/>
+          <br />
+          <br />
           <Heading ref={objaveRef} as="h3" size="md" mb={4}>
             Objave uporabnika
           </Heading>

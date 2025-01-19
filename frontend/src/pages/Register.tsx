@@ -12,7 +12,6 @@ import {
   Checkbox,
 } from '@chakra-ui/react';
 import { UserContext, UserContextType } from '../userContext';
-import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../config';
 
 // TODO - Add validation for input fields
@@ -27,7 +26,6 @@ const Register: React.FC = () => {
 
   const userContext = useContext<UserContextType>(UserContext);
   const toast = useToast();
-  const navigate = useNavigate();
 
   const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -116,6 +114,7 @@ const Register: React.FC = () => {
           <FormControl id="password" isRequired>
             <FormLabel fontSize="lg">Geslo</FormLabel>
             <Input
+              data-testid="Geslo"
               type={showPassword ? 'text' : 'password'} // Uporabi 'text' ali 'password' glede na stanje
               placeholder="Vnesite geslo"
               value={password}

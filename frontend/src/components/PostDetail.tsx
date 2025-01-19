@@ -89,7 +89,6 @@ const PostDetail: React.FC = () => {
   useEffect(() => {
     if (!id || post) return;
     fetchPost(); // Inicialno naložite podatke o objavi
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCommentSubmit = () => {
@@ -160,11 +159,11 @@ const PostDetail: React.FC = () => {
         },
         body: JSON.stringify({ userId: user?._id }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to report post');
       }
-  
+
       const data = await response.json();
       if (data.message === 'You have already reported this post') {
         alert('Već ste prijavili ovu objavu.');

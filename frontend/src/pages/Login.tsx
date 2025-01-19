@@ -109,6 +109,7 @@ const Login: React.FC = () => {
           <FormControl id="password" isRequired>
             <FormLabel fontSize="lg">Geslo</FormLabel>
             <Input
+              data-testid="geslo"
               type={showPassword ? 'text' : 'password'}
               placeholder="Vnesite geslo"
               value={password}

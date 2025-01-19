@@ -1,3 +1,4 @@
+import React from 'react';
 import { useEffect, useContext } from 'react';
 import { UserContext, UserContextType } from '../userContext'; // Ensure UserContextType is defined
 import { Navigate } from 'react-router-dom';

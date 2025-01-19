@@ -1,6 +1,5 @@
-// App.tsx
 import React, { Dispatch, SetStateAction, useState } from 'react';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { publicRoutes, protectedRoutes } from './routes';
 import { User } from './interfaces/User';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -48,20 +47,16 @@ function App() {
             <Route path="/posts" element={<Posts />} />
             <Route path="/posts/:id" element={<PostDetail />} />
             {publicRoutes.map((route) => (
-                <Route
-                    key={route.to}
-                    path={route.to}
-                    element={route.element}
-                />
+              <Route key={route.to} path={route.to} element={route.element} />
             ))}
 
             {/* Zaščiteni Routes - samo za prijavljene */}
             {protectedRoutes.map((route) => (
-                <Route
-                    key={route.to}
-                    path={route.to}
-                    element={<ProtectedRoute user={user} element={route.element} />}
-                />
+              <Route
+                key={route.to}
+                path={route.to}
+                element={<ProtectedRoute user={user} element={route.element} />}
+              />
             ))}
           </Routes>
         </main>
