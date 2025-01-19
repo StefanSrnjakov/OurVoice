@@ -1,0 +1,7 @@
+organization=rups-test
+projectKey=rups-test_our-voice
+serverUrl=https://sonarcloud.io
+serverVersion=8.0.0.58807
+dashboardUrl=https://sonarcloud.io/dashboard?id=rups-test_our-voice
+ceTaskId=AZR_8WOyiL1aUyXe-4jm
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AZR_8WOyiL1aUyXe-4jm
